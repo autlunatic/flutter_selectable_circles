@@ -39,7 +39,7 @@ class SelectableCircleSubItems {
   SelectableCircleSubItems(this.description, this.items);
 
   /// description of the subitems
-  final String description;
+  final Widget description;
 
   /// List of the subitems to be displayed
   final List<SelectableCircleSubItem> items;

@@ -4,24 +4,25 @@ import 'package:selectable_circle_list/selectable_circle_list.dart';
 
 void main() => runApp(MyApp());
 
+/// example app
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'selectable circles demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
+/// home widget of the example app
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
+  /// creates the widget
+  MyHomePage({Key key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -36,16 +37,8 @@ class _MyHomePageState extends State<MyHomePage> {
         "first",
         "first",
         Colors.red,
-        subItemList: SelectableCircleSubItems("Special", [
+        subItemList: SelectableCircleSubItems(Text("Special"), [
           SelectableCircleSubItem("subfirst", "subfirst"),
-          SelectableCircleSubItem("subsecond", "subsecond"),
-          SelectableCircleSubItem("subsecond", "subsecond"),
-          SelectableCircleSubItem("subsecond", "subsecond"),
-          SelectableCircleSubItem("subsecond", "subsecond"),
-          SelectableCircleSubItem("subsecond", "subsecond"),
-          SelectableCircleSubItem("subsecond", "subsecond"),
-          SelectableCircleSubItem("subsecond", "subsecond"),
-          SelectableCircleSubItem("subsecond", "subsecond"),
           SelectableCircleSubItem("subsecond", "subsecond"),
           SelectableCircleSubItem("subsecond", "subsecond"),
           SelectableCircleSubItem("subsecond", "subsecond"),
@@ -57,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
         "second",
         Colors.orange,
         subItemList: SelectableCircleSubItems(
-          "Special",
+          Text("Special"),
           [
             SelectableCircleSubItem("subfirst", "subfirst"),
             SelectableCircleSubItem("subsecond", "subsecond"),
@@ -71,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
         "third",
         Colors.blue,
         subItemList: SelectableCircleSubItems(
-          "Special",
+          Text("Special"),
           [
             SelectableCircleSubItem("subfirst", "subfirst"),
             SelectableCircleSubItem("subsecond", "subsecond"),
@@ -85,37 +78,30 @@ class _MyHomePageState extends State<MyHomePage> {
       SelectableCircleItem(
           Icon(Icons.ac_unit), "fifth", "fifth", Colors.orange),
       SelectableCircleItem(Icon(Icons.ac_unit), "6", "6", Colors.green),
-      SelectableCircleItem(Icon(Icons.ac_unit), "7", "7", Colors.green),
-      SelectableCircleItem(Icon(Icons.ac_unit), "8", "8", Colors.green),
-      SelectableCircleItem(Icon(Icons.ac_unit), "9", "9", Colors.green),
     ];
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('selectable circles demo'),
       ),
       body: Container(
         child: ListView(
           children: <Widget>[
-            // Text("asdf"),
-            // Text("eieie"),
-
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.0),
               child: SelectableCircleList(
-                list,
-                description: "test",
+                children: list,
+                description: Text("test"),
                 // width: 90.0,
-                onTap: onTapCircle,
+                onTap: _onTapCircle,
               ),
             ),
-            Text("asdf"),
           ],
         ),
       ),
     );
   }
 
-  onTapCircle(String value, String subvalue) {
+  _onTapCircle(String value, String subvalue) {
     print("tapped $value $subvalue");
   }
 }

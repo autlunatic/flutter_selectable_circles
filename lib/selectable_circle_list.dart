@@ -11,15 +11,15 @@ import 'package:selectable_circle_list/selectable_circle_item.dart';
 /// It can also have two rows when the selected item has subitems
 class SelectableCircleList extends StatefulWidget {
   /// creates the Widget
-  SelectableCircleList(
-    this.children, {
+  SelectableCircleList({
+    @required this.children,
     this.description,
     this.onTap,
     this.itemWidth,
   });
 
   /// a descrition that is displayed one row above the selectable items
-  final String description;
+  final Widget description;
 
   /// from these items the selectableCirles are built
   final List<SelectableCircleItem> children;
@@ -45,13 +45,14 @@ class _SelectableCircleListState extends State<SelectableCircleList> {
         (selected.subItemList != null && selected.subItemList.items.isNotEmpty);
     final circleWidth =
         widget.itemWidth ?? (MediaQuery.of(context).size.width - 20) / 4;
-    print("$circleWidth");
-    final rowHeight = circleWidth + 12.0;
-    final height = needChilds ? rowHeight * 2 : rowHeight;
+    final rowHeight = circleWidth + 16.0;
+    final completeHeight = rowHeight + 16.0;
+    final height = needChilds ? completeHeight * 2 : completeHeight;
     final out = Container(
       height: height,
       child: Column(
         children: <Widget>[
+          Align(alignment: Alignment.centerLeft, child: widget.description),
           Container(
             height: rowHeight,
             child: ListView(
@@ -59,60 +60,68 @@ class _SelectableCircleListState extends State<SelectableCircleList> {
               children: [
                 ...widget.children
                     .map(
-                      (sci) => Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5.0),
-                            child: SelectableCircle(
-                              width: circleWidth - 10,
-                              color: sci.color,
-                              borderColor: sci.color,
-                              selectMode: SelectMode.check,
-                              isSelected: _value.startsWith(sci.value),
-                              child: sci.centerWidget,
-                              bottomDescription: Text(sci.description),
-                              onTap: () {
-                                setState(() {
-                                  _value = "${sci.value}";
-                                });
-                                widget.onTap(sci.value, "");
-                              },
-                            ),
-                          ),
+                      (sci) => _buildCircle(circleWidth, sci),
                     )
                     .toList(),
               ],
             ),
           ),
-          if (needChilds)
-            SelectableCircleList(
-              selected.subItemList.items
-                  .asMap()
-                  .map(
-                    (index, item) {
-                      return MapEntry(
-                        index,
-                        SelectableCircleItem(
-                          selected.centerWidget,
-                          item.description,
-                          item.value,
-                          Color.lerp(
-                              selected.color,
-                              Colors.white,
-                              min(1.0,
-                                  index / selected.subItemList.items.length)),
-                        ),
-                      );
-                    },
-                  )
-                  .values
-                  .toList(),
-              description: selected.subItemList.description,
-              onTap: _onTapChild,
-            )
+          if (needChilds) _buildSubitems(selected)
         ],
       ),
     );
     // Scrollable.ensureVisible(selected.key.currentContext);
     return out;
+  }
+
+  SelectableCircleList _buildSubitems(SelectableCircleItem selected) {
+    return SelectableCircleList(
+      children: selected.subItemList.items
+          .asMap()
+          .map(
+            (index, item) {
+              final color = Color.lerp(
+                selected.color,
+                Colors.white,
+                min(1.0, 0.9 * index / selected.subItemList.items.length),
+              );
+              return MapEntry(
+                index,
+                SelectableCircleItem(
+                  selected.centerWidget,
+                  item.description,
+                  item.value,
+                  color,
+                ),
+              );
+            },
+          )
+          .values
+          .toList(),
+      description: selected.subItemList.description,
+      onTap: _onTapChild,
+    );
+  }
+
+  Padding _buildCircle(double circleWidth, SelectableCircleItem sci) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 5.0),
+      child: SelectableCircle(
+        width: circleWidth - 10,
+        color: sci.color,
+        borderColor: sci.color,
+        selectMode: SelectMode.check,
+        isSelected: _value.startsWith(sci.value),
+        child: sci.centerWidget,
+        bottomDescription: Text(sci.description),
+        onTap: () {
+          setState(() {
+            _value = "${sci.value}";
+          });
+          widget.onTap(sci.value, "");
+        },
+      ),
+    );
   }
 
   _onTapChild(String value, String subValue) {
