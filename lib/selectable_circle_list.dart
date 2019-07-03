@@ -115,7 +115,6 @@ class _SelectableCircleListState extends State<SelectableCircleList>
     var initialValue = "";
     if (widget.initialValue.isNotEmpty) {
       final index = widget.initialValue.indexOf("|");
-      print("${widget.initialValue.length} - $index");
       if (index > 0 && widget.initialValue.length > index + 1) {
         initialValue = widget.initialValue.substring(index + 1);
       }
