@@ -6,20 +6,29 @@ import 'package:flutter/material.dart';
 import 'package:selectable_circle/selectable_circle.dart';
 import 'package:selectable_circle_list/selectable_circle_item.dart';
 
+import 'package:after_layout/after_layout.dart';
+
+export 'package:selectable_circle_list/selectable_circle_item.dart';
+
 /// Widget that displays selectable Circles in a row
 ///
 /// It can also have two rows when the selected item has subitems
 class SelectableCircleList extends StatefulWidget {
   /// creates the Widget
-  SelectableCircleList({
-    @required this.children,
-    this.description,
-    this.onTap,
-    this.itemWidth,
-  });
+  SelectableCircleList(
+      {@required this.children,
+      this.description,
+      this.subDescription,
+      this.onTap,
+      this.itemWidth,
+      String initialValue})
+      : initialValue = initialValue ?? "";
 
   /// a descrition that is displayed one row above the selectable items
   final Widget description;
+
+  /// a descrition that is displayed one row above the selectable subitems
+  final Widget subDescription;
 
   /// from these items the selectableCirles are built
   final List<SelectableCircleItem> children;
@@ -27,46 +36,73 @@ class SelectableCircleList extends StatefulWidget {
   /// when one of the circles is tapped this function is called
   final Function(String value, String subvalue) onTap;
 
+  /// displays the List with the initial Value selected
+  /// Subitemvalues are separated with |
+  final String initialValue;
+
   /// width of a item, if null its calculated that 4 circles fit the screen
   final double itemWidth;
   @override
   _SelectableCircleListState createState() => _SelectableCircleListState();
 }
 
-class _SelectableCircleListState extends State<SelectableCircleList> {
-  String _value = "first";
+class _SelectableCircleListState extends State<SelectableCircleList>
+    with AfterLayoutMixin<SelectableCircleList> {
+  String _value;
+  bool oneIsSelected = false;
+  final _selectedKey = GlobalKey();
+  final _descriptionKey = GlobalKey();
+  final _subDescriptionKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
+    oneIsSelected = false;
+    final descriptionContainer = GestureDetector(
+      key: _descriptionKey,
+      child: Align(alignment: Alignment.centerLeft, child: widget.description),
+    );
+    final subDescriptionContainer = Container(
+        key: _subDescriptionKey,
+        child: Align(
+            alignment: Alignment.centerLeft, child: widget.subDescription));
     final selectedList =
         widget.children.where((item) => _value.startsWith("${item.value}"));
     final selected = selectedList.isNotEmpty ? selectedList.first : null;
     final needChilds = _value.isNotEmpty &&
         (selected != null) &&
-        (selected.subItemList != null && selected.subItemList.items.isNotEmpty);
-    final circleWidth =
-        widget.itemWidth ?? (MediaQuery.of(context).size.width - 20) / 4;
-    final rowHeight = circleWidth + 16.0;
-    final completeHeight = rowHeight + 16.0;
-    final height = needChilds ? completeHeight * 2 : completeHeight;
+        (selected.subItemList != null && selected.subItemList.isNotEmpty);
+    final rowHeight = calcCircleWidth() + 16.0;
     final out = Container(
-      height: height,
       child: Column(
         children: <Widget>[
-          Align(alignment: Alignment.centerLeft, child: widget.description),
+          descriptionContainer,
           Container(
             height: rowHeight,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                ...widget.children
-                    .map(
-                      (sci) => _buildCircle(circleWidth, sci),
-                    )
-                    .toList(),
-              ],
-            ),
+            child: widget.children.length < 3
+                ? SingleChildScrollView(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        ...widget.children
+                            .map(
+                              _buildCircle,
+                            )
+                            .toList(),
+                      ],
+                    ),
+                  )
+                : ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      ...widget.children
+                          .map(
+                            _buildCircle,
+                          )
+                          .toList(),
+                    ],
+                  ),
           ),
-          if (needChilds) _buildSubitems(selected)
+          if (needChilds) _buildSubitems(selected, subDescriptionContainer)
         ],
       ),
     );
@@ -74,16 +110,25 @@ class _SelectableCircleListState extends State<SelectableCircleList> {
     return out;
   }
 
-  SelectableCircleList _buildSubitems(SelectableCircleItem selected) {
+  SelectableCircleList _buildSubitems(
+      SelectableCircleItem selected, Widget subDescriptionContainer) {
+    var initialValue = "";
+    if (widget.initialValue.isNotEmpty) {
+      final index = widget.initialValue.indexOf("|");
+      print("${widget.initialValue.length} - $index");
+      if (index > 0 && widget.initialValue.length > index + 1) {
+        initialValue = widget.initialValue.substring(index + 1);
+      }
+    }
     return SelectableCircleList(
-      children: selected.subItemList.items
+      children: selected.subItemList
           .asMap()
           .map(
             (index, item) {
               final color = Color.lerp(
                 selected.color,
                 Colors.white,
-                min(1.0, 0.9 * index / selected.subItemList.items.length),
+                min(1.0, 0.9 * index / selected.subItemList.length),
               );
               return MapEntry(
                 index,
@@ -98,13 +143,16 @@ class _SelectableCircleListState extends State<SelectableCircleList> {
           )
           .values
           .toList(),
-      description: selected.subItemList.description,
+      description: subDescriptionContainer,
       onTap: _onTapChild,
+      initialValue: initialValue,
     );
   }
 
-  Padding _buildCircle(double circleWidth, SelectableCircleItem sci) {
-    return Padding(
+  Padding _buildCircle(SelectableCircleItem sci) {
+    final isSelected = _value.startsWith(sci.value);
+    final circleWidth = calcCircleWidth();
+    final padding = Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.0),
       child: SelectableCircle(
         width: circleWidth - 10,
@@ -112,6 +160,7 @@ class _SelectableCircleListState extends State<SelectableCircleList> {
         borderColor: sci.color,
         selectMode: SelectMode.check,
         isSelected: _value.startsWith(sci.value),
+        key: isSelected && !oneIsSelected ? _selectedKey : null,
         child: sci.centerWidget,
         bottomDescription: Text(sci.description),
         onTap: () {
@@ -122,9 +171,34 @@ class _SelectableCircleListState extends State<SelectableCircleList> {
         },
       ),
     );
+    if (isSelected) {
+      oneIsSelected = true;
+    }
+    return padding;
   }
 
   _onTapChild(String value, String subValue) {
     widget.onTap(_value, value);
+  }
+
+  void makeVisible() {
+    if (oneIsSelected) {
+      Scrollable.ensureVisible(_selectedKey.currentContext);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.initialValue;
+  }
+
+  @override
+  void afterFirstLayout(BuildContext context) {
+    makeVisible();
+  }
+
+  double calcCircleWidth() {
+    return widget.itemWidth ?? (MediaQuery.of(context).size.width - 20) / 4;
   }
 }

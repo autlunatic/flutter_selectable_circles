@@ -30,19 +30,7 @@ class SelectableCircleItem {
   /// the subitems have the same centerwidget
   /// the color of the subitems is taken from the parent and
   /// automatically lerped to white, when more items a displayed
-  final SelectableCircleSubItems subItemList;
-}
-
-/// Subitems are used in the [SelectableCircleItem]
-class SelectableCircleSubItems {
-  /// creates the subitems
-  SelectableCircleSubItems(this.description, this.items);
-
-  /// description of the subitems
-  final Widget description;
-
-  /// List of the subitems to be displayed
-  final List<SelectableCircleSubItem> items;
+  final List<SelectableCircleSubItem> subItemList;
 }
 
 /// Information for one Subitem of a [SelectableCircleItem]
