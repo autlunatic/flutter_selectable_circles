@@ -1,14 +1,57 @@
 # selectable_circle_list
 
-A new Flutter package project.
+A flutter widget to display selecetable_circles in a list.
+You should be able to select the circles.
+You can define Subitems per item.
 
-## Getting Started
+## How to use
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+    SelectableCircleList(
+        children: _buildItems(),
+        description: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Text("test"),
+        ),
+        subDescription: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Text("subtest"),
+        ),
+        onTap: _onTapCircle,
+        initialValue: "6|subsixth",
+    )
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+    List<SelectableCircleItem> _buildItems() {
+        return <SelectableCircleItem>[
+            SelectableCircleItem(
+                Icon(Icons.description), "first", "first", Colors.red),
+            SelectableCircleItem(
+                Icon(Icons.ac_unit), "second", "second", Colors.orange),
+            SelectableCircleItem(
+                Icon(Icons.ac_unit), "third", "third", Colors.blue),
+            SelectableCircleItem(
+                Icon(Icons.ac_unit), "may the 4th", "forth", Colors.green),
+            SelectableCircleItem(
+                Icon(Icons.ac_unit), "fifth", "fifth", Colors.orange),
+            SelectableCircleItem(
+                Icon(Icons.ac_unit),
+                "6",
+                "6",
+                Colors.green,
+                subItemList: [
+                SelectableCircleSubItem("subfirst", "subfirst"),
+                SelectableCircleSubItem("subsecond", "subsecond"),
+                SelectableCircleSubItem("subthird", "subthird"),
+                SelectableCircleSubItem("subfourth", "subfourth"),
+                SelectableCircleSubItem("subfifth", "subfifth"),
+                SelectableCircleSubItem("subsixth", "subsixth"),
+                ],
+            ),
+        ];
+    }
+
+#Screenshot
+
+<img src="https://github.com/autlunatic/flutter_selectable_circles/blob/master/screenshots/sc.gif?raw=true" width="240"/>
+
+#Contribution
+Contribution is more than welcome.

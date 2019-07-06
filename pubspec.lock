@@ -101,7 +101,7 @@ packages:
       name: selectable_circle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.6+1"
+    version: "0.1.6+2"
   sky_engine:
     dependency: transitive
     description: flutter

@@ -40,7 +40,7 @@ class SelectableCircleList extends StatefulWidget {
   /// Subitemvalues are separated with |
   final String initialValue;
 
-  /// width of a item, if null its calculated that 4 circles fit the screen
+  /// width of a item, if null it is calculated that 4 circles fit the screen
   final double itemWidth;
   @override
   _SelectableCircleListState createState() => _SelectableCircleListState();
@@ -53,6 +53,8 @@ class _SelectableCircleListState extends State<SelectableCircleList>
   final _selectedKey = GlobalKey();
   final _descriptionKey = GlobalKey();
   final _subDescriptionKey = GlobalKey();
+
+  bool madeVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +80,7 @@ class _SelectableCircleListState extends State<SelectableCircleList>
           descriptionContainer,
           Container(
             height: rowHeight,
-            child: widget.children.length < 3
+            child: widget.children.length < 5
                 ? SingleChildScrollView(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -159,7 +161,7 @@ class _SelectableCircleListState extends State<SelectableCircleList>
         borderColor: sci.color,
         selectMode: SelectMode.check,
         isSelected: _value.startsWith(sci.value),
-        key: isSelected && !oneIsSelected ? _selectedKey : null,
+        key: isSelected && !oneIsSelected && !madeVisible ? _selectedKey : null,
         child: sci.centerWidget,
         bottomDescription: Text(sci.description),
         onTap: () {
@@ -180,12 +182,6 @@ class _SelectableCircleListState extends State<SelectableCircleList>
     widget.onTap(_value, value);
   }
 
-  void makeVisible() {
-    if (oneIsSelected) {
-      Scrollable.ensureVisible(_selectedKey.currentContext);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -194,7 +190,10 @@ class _SelectableCircleListState extends State<SelectableCircleList>
 
   @override
   void afterFirstLayout(BuildContext context) {
-    makeVisible();
+    if (oneIsSelected) {
+      Scrollable.ensureVisible(_selectedKey.currentContext);
+    }
+    madeVisible = true;
   }
 
   double calcCircleWidth() {
