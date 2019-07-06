@@ -49,9 +49,10 @@ You can define Subitems per item.
         ];
     }
 
-#Screenshot
+## Screenshot
 
 <img src="https://github.com/autlunatic/flutter_selectable_circles/blob/master/screenshots/sc.gif?raw=true" width="240"/>
 
-#Contribution
+## Contribution
+
 Contribution is more than welcome.
