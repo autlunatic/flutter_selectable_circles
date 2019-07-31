@@ -18,6 +18,7 @@ You can define Subitems per item.
         ),
         onTap: _onTapCircle,
         initialValue: "6|subsixth",
+        //hideSelection: true // to hide the check icon when tapping
     )
 
     List<SelectableCircleItem> _buildItems() {

@@ -52,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 onTap: _onTapCircle,
                 initialValue: "6",
+                // hideSelection: true,
               ),
             ),
           ],

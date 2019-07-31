@@ -1,7 +1,7 @@
 name: selectable_circle_list
 description: A Flutter widget for displaying the Selectable_circle widget in a list.
   it is also possible to display subitems of the selectable circle
-version: 0.1.0
+version: 0.1.1
 author: autlunatic <autlunatic@gmail.com>
 homepage: https://github.com/autlunatic/flutter_selectable_circles
 
@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  selectable_circle: ^0.1.6+1
+  selectable_circle: ^0.1.6+3
   after_layout: ^1.0.7
 
 dev_dependencies:

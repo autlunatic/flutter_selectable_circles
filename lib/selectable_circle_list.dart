@@ -21,8 +21,10 @@ class SelectableCircleList extends StatefulWidget {
       this.subDescription,
       this.onTap,
       this.itemWidth,
-      String initialValue})
-      : initialValue = initialValue ?? "";
+      String initialValue,
+      bool hideSelection})
+      : initialValue = initialValue ?? "",
+        hideSelection = hideSelection ?? false;
 
   /// a descrition that is displayed one row above the selectable items
   final Widget description;
@@ -42,6 +44,10 @@ class SelectableCircleList extends StatefulWidget {
 
   /// width of a item, if null it is calculated that 4 circles fit the screen
   final double itemWidth;
+
+  /// on tap of the circle it is selected,
+  /// otherwise only the tap event is called
+  final bool hideSelection;
   @override
   _SelectableCircleListState createState() => _SelectableCircleListState();
 }
@@ -151,7 +157,7 @@ class _SelectableCircleListState extends State<SelectableCircleList>
   }
 
   Padding _buildCircle(SelectableCircleItem sci) {
-    final isSelected = _value.startsWith(sci.value);
+    final isSelected = !widget.hideSelection && _value.startsWith(sci.value);
     final circleWidth = calcCircleWidth();
     final padding = Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.0),
@@ -160,7 +166,7 @@ class _SelectableCircleListState extends State<SelectableCircleList>
         color: sci.color,
         borderColor: sci.color,
         selectMode: SelectMode.check,
-        isSelected: _value.startsWith(sci.value),
+        isSelected: isSelected,
         key: isSelected && !oneIsSelected && !madeVisible ? _selectedKey : null,
         child: sci.centerWidget,
         bottomDescription: Text(sci.description),
