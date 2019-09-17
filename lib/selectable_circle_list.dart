@@ -22,6 +22,8 @@ class SelectableCircleList extends StatefulWidget {
       this.onTap,
       this.itemWidth,
       String initialValue,
+      this.canMultiselect = false,
+      this.onTapMultiSelect,
       bool hideSelection})
       : initialValue = initialValue ?? "",
         hideSelection = hideSelection ?? false;
@@ -38,12 +40,18 @@ class SelectableCircleList extends StatefulWidget {
   /// when one of the circles is tapped this function is called
   final Function(String value, String subvalue) onTap;
 
+  /// when one of the circles is tapped this function is called
+  final Function(List<String> values) onTapMultiSelect;
+
   /// displays the List with the initial Value selected
   /// Subitemvalues are separated with |
   final String initialValue;
 
   /// width of a item, if null it is calculated that 4 circles fit the screen
   final double itemWidth;
+
+  /// can select more than one item, Attention! Subitems are disabled
+  final bool canMultiselect;
 
   /// on tap of the circle it is selected,
   /// otherwise only the tap event is called
@@ -54,7 +62,7 @@ class SelectableCircleList extends StatefulWidget {
 
 class _SelectableCircleListState extends State<SelectableCircleList>
     with AfterLayoutMixin<SelectableCircleList> {
-  String _value;
+  final _values = <String>[];
   bool oneIsSelected = false;
   final _selectedKey = GlobalKey();
   final _descriptionKey = GlobalKey();
@@ -74,11 +82,13 @@ class _SelectableCircleListState extends State<SelectableCircleList>
         child: Align(
             alignment: Alignment.centerLeft, child: widget.subDescription));
     final selectedList =
-        widget.children.where((item) => _value.startsWith("${item.value}"));
+        widget.children.where((item) => _values.contains("${item.value}"));
     final selected = selectedList.isNotEmpty ? selectedList.first : null;
-    final needChilds = _value.isNotEmpty &&
+    final needChilds = !widget.canMultiselect &&
+        _values.isNotEmpty &&
         (selected != null) &&
         (selected.subItemList != null && selected.subItemList.isNotEmpty);
+    final circleWidth = calcCircleWidth();
     final rowHeight = calcCircleWidth() + 16.0;
     final out = Container(
       child: Column(
@@ -86,7 +96,8 @@ class _SelectableCircleListState extends State<SelectableCircleList>
           descriptionContainer,
           Container(
             height: rowHeight,
-            child: widget.children.length < 5
+            child: widget.children.length * circleWidth <
+                    MediaQuery.of(context).size.width - 20
                 ? SingleChildScrollView(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -153,11 +164,12 @@ class _SelectableCircleListState extends State<SelectableCircleList>
       description: subDescriptionContainer,
       onTap: _onTapChild,
       initialValue: initialValue,
+      itemWidth: widget.itemWidth,
     );
   }
 
   Padding _buildCircle(SelectableCircleItem sci) {
-    final isSelected = !widget.hideSelection && _value.startsWith(sci.value);
+    final isSelected = !widget.hideSelection && _values.contains(sci.value);
     final circleWidth = calcCircleWidth();
     final padding = Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.0),
@@ -171,10 +183,7 @@ class _SelectableCircleListState extends State<SelectableCircleList>
         child: sci.centerWidget,
         bottomDescription: Text(sci.description),
         onTap: () {
-          setState(() {
-            _value = "${sci.value}";
-          });
-          widget.onTap(sci.value, "");
+          doOnTap(sci.value);
         },
       ),
     );
@@ -185,13 +194,16 @@ class _SelectableCircleListState extends State<SelectableCircleList>
   }
 
   _onTapChild(String value, String subValue) {
-    widget.onTap(_value, value);
+    widget.onTap(_values[0], value);
   }
 
   @override
   void initState() {
     super.initState();
-    _value = widget.initialValue;
+    if (widget.initialValue != null && widget.initialValue.isNotEmpty) {
+      _values.addAll(widget.initialValue.split("|"));
+      print(_values);
+    }
   }
 
   @override
@@ -204,5 +216,29 @@ class _SelectableCircleListState extends State<SelectableCircleList>
 
   double calcCircleWidth() {
     return widget.itemWidth ?? (MediaQuery.of(context).size.width - 20) / 4;
+  }
+
+  void doOnTap(String value) {
+    print(widget.canMultiselect);
+    if (widget.canMultiselect) {
+      setState(() {
+        if (_values.contains(value)) {
+          _values.remove(value);
+        } else {
+          _values.add(value);
+        }
+      });
+      if (widget.onTapMultiSelect != null) {
+        widget.onTapMultiSelect(_values);
+      }
+    } else {
+      _values.clear();
+      setState(() {
+        _values.add(value);
+      });
+      if (widget.onTap != null) {
+        widget.onTap(value, "");
+      }
+    }
   }
 }

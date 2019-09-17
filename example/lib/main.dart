@@ -51,7 +51,22 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Text("subtest"),
                 ),
                 onTap: _onTapCircle,
-                initialValue: "6",
+                initialValue: "6|subsecond",
+                // hideSelection: true,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: SelectableCircleList(
+                children: _buildItems(),
+                description: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text("test multiselect"),
+                ),
+                onTapMultiSelect: _onTapMulti,
+                initialValue: "1|3|6",
+                itemWidth: 110,
+                canMultiselect: true,
                 // hideSelection: true,
               ),
             ),
@@ -63,15 +78,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<SelectableCircleItem> _buildItems() {
     return <SelectableCircleItem>[
+      SelectableCircleItem(Icon(Icons.description), "first", "1", Colors.red),
+      SelectableCircleItem(Icon(Icons.ac_unit), "second", "2", Colors.orange,
+          subItemList: [
+            SelectableCircleSubItem("subfirst", "subfirst"),
+            SelectableCircleSubItem("subsecond", "subsecond"),
+            SelectableCircleSubItem("subthird", "subthird"),
+            SelectableCircleSubItem("subfourth", "subfourth"),
+            SelectableCircleSubItem("subfifth", "subfifth"),
+            SelectableCircleSubItem("subsixth", "subsixth"),
+          ]),
+      SelectableCircleItem(Icon(Icons.ac_unit), "third", "3", Colors.blue),
       SelectableCircleItem(
-          Icon(Icons.description), "first", "first", Colors.red),
-      SelectableCircleItem(
-          Icon(Icons.ac_unit), "second", "second", Colors.orange),
-      SelectableCircleItem(Icon(Icons.ac_unit), "third", "third", Colors.blue),
-      SelectableCircleItem(
-          Icon(Icons.ac_unit), "may the 4th", "forth", Colors.green),
-      SelectableCircleItem(
-          Icon(Icons.ac_unit), "fifth", "fifth", Colors.orange),
+          Icon(Icons.ac_unit), "may the 4th", "4", Colors.green),
+      SelectableCircleItem(Icon(Icons.ac_unit), "fifth", "5", Colors.orange),
       SelectableCircleItem(
         Icon(Icons.ac_unit),
         "6",
@@ -91,5 +111,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   _onTapCircle(String value, String subvalue) {
     print("tapped $value $subvalue");
+  }
+
+  _onTapMulti(List<String> values) {
+    print(values);
   }
 }
