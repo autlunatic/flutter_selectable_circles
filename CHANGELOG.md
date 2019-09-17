@@ -8,3 +8,7 @@
 
 - added canMultiSelect
 - fixed itemwidth bug with subitems
+
+## [0.1.3] - 20.09.2019
+
+- added externalPadding

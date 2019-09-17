@@ -52,11 +52,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 onTap: _onTapCircle,
                 initialValue: "6|subsecond",
-                // hideSelection: true,
               ),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              padding: EdgeInsets.symmetric(horizontal: 50.0),
               child: SelectableCircleList(
                 children: _buildItems(),
                 description: Padding(
@@ -65,9 +64,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 onTapMultiSelect: _onTapMulti,
                 initialValue: "1|3|6",
-                itemWidth: 110,
+                itemWidth: 60,
                 canMultiselect: true,
-                // hideSelection: true,
+                externalPadding: 90,
               ),
             ),
           ],

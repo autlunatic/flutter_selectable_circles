@@ -24,6 +24,7 @@ class SelectableCircleList extends StatefulWidget {
       String initialValue,
       this.canMultiselect = false,
       this.onTapMultiSelect,
+      this.externalPadding = 20.00,
       bool hideSelection})
       : initialValue = initialValue ?? "",
         hideSelection = hideSelection ?? false;
@@ -52,6 +53,9 @@ class SelectableCircleList extends StatefulWidget {
 
   /// can select more than one item, Attention! Subitems are disabled
   final bool canMultiselect;
+
+  /// width, that is remaining on the side of the widget from the screen.
+  final double externalPadding;
 
   /// on tap of the circle it is selected,
   /// otherwise only the tap event is called
@@ -97,7 +101,7 @@ class _SelectableCircleListState extends State<SelectableCircleList>
           Container(
             height: rowHeight,
             child: widget.children.length * circleWidth <
-                    MediaQuery.of(context).size.width - 20
+                    MediaQuery.of(context).size.width - widget.externalPadding
                 ? SingleChildScrollView(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
