@@ -12,3 +12,7 @@
 ## [0.1.3] - 20.09.2019
 
 - added externalPadding
+
+## [0.1.4] - 20.09.2019
+
+- externalPadding is also added to Sublist

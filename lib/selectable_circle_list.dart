@@ -169,6 +169,7 @@ class _SelectableCircleListState extends State<SelectableCircleList>
       onTap: _onTapChild,
       initialValue: initialValue,
       itemWidth: widget.itemWidth,
+      externalPadding: widget.externalPadding,
     );
   }
 
