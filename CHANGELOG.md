@@ -17,6 +17,6 @@
 
 - externalPadding is also added to Sublist
 
-## [0.1.5] - 27.11.2019
+## [0.1.5+1] - 27.11.2019
 
 - changed from Ensuvisible to Scrollcontroller.animateTo, because Ensurevisible also scrolls external lists.

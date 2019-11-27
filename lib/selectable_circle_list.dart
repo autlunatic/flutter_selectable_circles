@@ -231,9 +231,10 @@ class _SelectableCircleListState extends State<SelectableCircleList>
             final scrollextent = _scrollController.position.maxScrollExtent -
                 (widget.children.length - _selectedIndex - 1) *
                     calcCircleWidth();
-            print(scrollextent);
-            _scrollController.animateTo(scrollextent,
-                curve: Curves.easeOut, duration: Duration(milliseconds: 300));
+            if (scrollextent > 0) {
+              _scrollController.animateTo(scrollextent,
+                  curve: Curves.easeOut, duration: Duration(milliseconds: 300));
+            }
           },
         );
       }
