@@ -1,5 +1,6 @@
 library selectable_circle_list;
 
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -64,19 +65,23 @@ class SelectableCircleList extends StatefulWidget {
   _SelectableCircleListState createState() => _SelectableCircleListState();
 }
 
+const nothingSelected = -1;
+
 class _SelectableCircleListState extends State<SelectableCircleList>
     with AfterLayoutMixin<SelectableCircleList> {
   final _values = <String>[];
-  bool oneIsSelected = false;
+  bool _canShowItemsInRow = false;
+  int _selectedIndex = nothingSelected;
   final _selectedKey = GlobalKey();
   final _descriptionKey = GlobalKey();
   final _subDescriptionKey = GlobalKey();
+  final _scrollController = ScrollController();
 
   bool madeVisible = false;
 
   @override
   Widget build(BuildContext context) {
-    oneIsSelected = false;
+    _selectedIndex = nothingSelected;
     final descriptionContainer = GestureDetector(
       key: _descriptionKey,
       child: Align(alignment: Alignment.centerLeft, child: widget.description),
@@ -94,33 +99,37 @@ class _SelectableCircleListState extends State<SelectableCircleList>
         (selected.subItemList != null && selected.subItemList.isNotEmpty);
     final circleWidth = calcCircleWidth();
     final rowHeight = calcCircleWidth() + 16.0;
+    _canShowItemsInRow = widget.children.length * circleWidth <
+        MediaQuery.of(context).size.width - widget.externalPadding;
     final out = Container(
       child: Column(
         children: <Widget>[
           descriptionContainer,
           Container(
             height: rowHeight,
-            child: widget.children.length * circleWidth <
-                    MediaQuery.of(context).size.width - widget.externalPadding
+            child: _canShowItemsInRow
                 ? SingleChildScrollView(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         ...widget.children
-                            .map(
-                              _buildCircle,
-                            )
+                            .asMap()
+                            .map((index, value) =>
+                                MapEntry(index, _buildCircle(index, value)))
+                            .values
                             .toList(),
                       ],
                     ),
                   )
                 : ListView(
                     scrollDirection: Axis.horizontal,
+                    controller: _scrollController,
                     children: [
                       ...widget.children
-                          .map(
-                            _buildCircle,
-                          )
+                          .asMap()
+                          .map((index, value) =>
+                              MapEntry(index, _buildCircle(index, value)))
+                          .values
                           .toList(),
                     ],
                   ),
@@ -129,7 +138,6 @@ class _SelectableCircleListState extends State<SelectableCircleList>
         ],
       ),
     );
-    // Scrollable.ensureVisible(selected.key.currentContext);
     return out;
   }
 
@@ -173,7 +181,7 @@ class _SelectableCircleListState extends State<SelectableCircleList>
     );
   }
 
-  Padding _buildCircle(SelectableCircleItem sci) {
+  Widget _buildCircle(int index, SelectableCircleItem sci) {
     final isSelected = !widget.hideSelection && _values.contains(sci.value);
     final circleWidth = calcCircleWidth();
     final padding = Padding(
@@ -184,7 +192,9 @@ class _SelectableCircleListState extends State<SelectableCircleList>
         borderColor: sci.color,
         selectMode: SelectMode.check,
         isSelected: isSelected,
-        key: isSelected && !oneIsSelected && !madeVisible ? _selectedKey : null,
+        key: isSelected && _selectedIndex == nothingSelected && !madeVisible
+            ? _selectedKey
+            : null,
         child: sci.centerWidget,
         bottomDescription: Text(sci.description),
         onTap: () {
@@ -192,8 +202,8 @@ class _SelectableCircleListState extends State<SelectableCircleList>
         },
       ),
     );
-    if (isSelected) {
-      oneIsSelected = true;
+    if (isSelected && _selectedIndex == nothingSelected) {
+      _selectedIndex = index;
     }
     return padding;
   }
@@ -213,8 +223,20 @@ class _SelectableCircleListState extends State<SelectableCircleList>
 
   @override
   void afterFirstLayout(BuildContext context) {
-    if (oneIsSelected) {
-      Scrollable.ensureVisible(_selectedKey.currentContext);
+    if (_selectedIndex >= 0) {
+      if (!_canShowItemsInRow) {
+        Timer(
+          Duration(milliseconds: 200),
+          () {
+            final scrollextent = _scrollController.position.maxScrollExtent -
+                (widget.children.length - _selectedIndex - 1) *
+                    calcCircleWidth();
+            print(scrollextent);
+            _scrollController.animateTo(scrollextent,
+                curve: Curves.easeOut, duration: Duration(milliseconds: 300));
+          },
+        );
+      }
     }
     madeVisible = true;
   }

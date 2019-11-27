@@ -49,14 +49,14 @@ packages:
       name: flare_dart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.4"
+    version: "2.2.5"
   flare_flutter:
     dependency: transitive
     description:
       name: flare_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.5.5"
+    version: "1.7.3"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -108,14 +108,14 @@ packages:
       name: selectable_circle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.6+3"
+    version: "0.1.6+4"
   selectable_circle_list:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.1.4"
+    version: "0.1.5"
   sky_engine:
     dependency: transitive
     description: flutter
